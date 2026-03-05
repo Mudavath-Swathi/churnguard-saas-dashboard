@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import axios from "axios";
+import api from "../../services/api";   
 import { useAuth } from "../../hooks/useAuth.jsx";
 
 const Register = () => {
@@ -20,27 +20,21 @@ const Register = () => {
     setError(null);
 
     try {
-      const res = await axios.post(
-        "http://localhost:3000/api/auth/register",
-        {
-          name,
-          email,
-          password,
-          workspaceName: company,
-        }
-      );
+      const res = await api.post("/auth/register", {
+        name,
+        email,
+        password,
+        workspaceName: company,
+      });
 
       console.log("REGISTER RESPONSE:", res.data);
 
-      
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
-      
       login(res.data.user);
-
-      
       navigate("/");
+
     } catch (err) {
       console.error(err);
       setError("Registration failed");
@@ -53,7 +47,7 @@ const Register = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
     >
-      {/* Brand */}
+
       <div className="text-center mb-6">
         <h1 className="text-2xl font-semibold text-brand-dark">
           Create your workspace
@@ -63,10 +57,8 @@ const Register = () => {
         </p>
       </div>
 
-      {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
 
-        {/* Company */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Company Name
@@ -80,7 +72,6 @@ const Register = () => {
           />
         </div>
 
-        {/* Name */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Your Name
@@ -94,7 +85,6 @@ const Register = () => {
           />
         </div>
 
-        {/* Email */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Work Email
@@ -108,7 +98,6 @@ const Register = () => {
           />
         </div>
 
-        
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Password
@@ -122,12 +111,10 @@ const Register = () => {
           />
         </div>
 
-        
         {error && (
           <p className="text-sm text-red-600">{error}</p>
         )}
 
-        
         <label className="flex items-start gap-2 text-sm text-gray-600">
           <input
             type="checkbox"
@@ -150,7 +137,6 @@ const Register = () => {
 
       </form>
 
-      
       <p className="text-center text-sm text-gray-600 mt-6">
         Already have an account?{" "}
         <Link to="/login" className="text-green-700 font-medium">
