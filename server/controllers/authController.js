@@ -15,17 +15,22 @@ export const register = async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    const workspace = await Workspace.create({ name: workspaceName });
-
+    // create user first
     const user = await User.create({
       name,
       email,
-      password,
-      workspace: workspace._id,
+      password
     });
 
-    workspace.owner = user._id;
-    await workspace.save();
+    // create workspace with owner
+    const workspace = await Workspace.create({
+      name: workspaceName,
+      owner: user._id
+    });
+
+    // attach workspace to user
+    user.workspace = workspace._id;
+    await user.save();
 
     res.status(201).json({
       token: generateToken(user._id),
@@ -35,30 +40,9 @@ export const register = async (req, res) => {
         email: user.email,
       },
     });
+
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
-  }
-};
-
-export const login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    const user = await User.findOne({ email }).select("+password");
-    if (!user || !(await user.comparePassword(password))) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
-
-    res.json({
-      token: generateToken(user._id),
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-      },
-    });
-  } catch (err) {
-    res.status(500).json({ message: "Server error" });
+    console.error("REGISTER ERROR:", err);
+    res.status(500).json({ message: err.message });
   }
 };
