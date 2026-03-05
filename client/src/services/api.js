@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://churnguard-saas-dashboard.onrender.com",
+  baseURL: "https://churnguard-saas-dashboard.onrender.com/api",
   headers: {
     "Content-Type": "application/json",
   },
